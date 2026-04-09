@@ -89,6 +89,8 @@ const PARTIDO_COMUNISTA_URL = "https://www.comunistas-mexicanos.org/";
 ## 📚 Base Teórica sobre la Plusvalía Implementada (Marx)
 Los datos que arroja la calculadora parten del valor inmutable del esfuerzo (según la teoría del valor-trabajo). La aplicación fracciona el 100% de la carga base del Censo en 3 pilares estructurales:
 
+> **Nota importante sobre los datos:** Todos los cálculos macroeconómicos y el refinamiento de la base de datos del Censo Económico del INEGI (`datos_rama.csv`) utilizados en este proyecto se obtuvieron generacionalmente a través del motor de análisis [voscarmv/marx](https://github.com/voscarmv/marx).
+
 $$ Horas Totales = H_{para\_salario} + H_{para\_infra} + H_{plusvalia} $$
 
 Mediante esta distribución proporcional a fracciones multiplicadas por un turno del usuario (usualmente de 8 Hrs), la aplicación evidencia la extracción neta como un asalto estructurado.

@@ -208,7 +208,7 @@ function App() {
           <div className="typeform-container step-card" style={{ maxWidth: '900px' }}>
             <h1 style={{fontSize: '3rem', color: 'var(--accent)'}}>La Realidad de tu Explotación</h1>
             <p style={{fontSize: '1.2rem', marginBottom: '30px', fontWeight: 500}}>
-              Con los datos del Censo Económico del INEGI para <b>{selectedRama === '_GLOBAL_' ? 'el promedio mexicano' : selectedRama}</b>, esto es lo que descubrimos de tu vida laboral:
+              Con los <a href="https://github.com/voscarmv/marx" target="_blank" rel="noreferrer" style={{color: 'inherit', textDecoration: 'underline', fontWeight: 'bold'}}>datos del Censo Económico del INEGI</a> para <b>{selectedRama === '_GLOBAL_' ? 'el promedio mexicano' : selectedRama}</b>, esto es lo que descubrimos de tu vida laboral:
             </p>
             
             <div className="result-container">
