@@ -1,121 +1,88 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { store, type RootState } from './store/store';
-import { setEmbeddings, setModelReady, setExtracting, setQueryInput, setResults } from './store/careerSlice';
+import { type RootState } from './store/store';
+import { setEmbeddings, setQueryInput, setResults, setExtracting } from './store/careerSlice';
 import { cosineSimilarity } from './utils/math';
 
 function App() {
   const dispatch = useDispatch();
-  const workerRef = useRef<Worker | null>(null);
 
-  const { isModelReady, isExtracting, queryInput, results } = useSelector(
+  const { isDataReady, queryInput, results, embeddings, isExtracting } = useSelector(
     (state: RootState) => state.career
   );
 
-  const [loadingMsg, setLoadingMsg] = useState('Inicializando aplicación...');
   const [showSplash, setShowSplash] = useState(true);
 
   useEffect(() => {
-    console.log('App montada. Iniciando petición de embeddings.json...');
-    // 1. Fetch precomputed embeddings from json
     fetch('/embeddings.json')
-      .then(res => {
-        console.log('Respuesta de embeddings.json:', res.status, res.statusText);
-        return res.json();
-      })
+      .then(res => res.json())
       .then(data => {
-        console.log(`Cargados ${data.length} embeddings desde el JSON local.`);
         dispatch(setEmbeddings(data));
+        setTimeout(() => setShowSplash(false), 500);
       })
-      .catch(err => console.error('Error al descargar pre-embeddings:', err));
+      .catch(err => console.error('Error al descargar pre-embeddings de OpenAI:', err));
+  }, [dispatch]);
 
-    // 2. Initialize web worker for transformers
-    console.log('Iniciando Web Worker para el modelo de IA...');
-    workerRef.current = new Worker(new URL('./worker.ts', import.meta.url), { type: 'module' });
+  const handleSearch = async () => {
+    if (!queryInput.trim() || !isDataReady) return;
 
-    workerRef.current.addEventListener('message', (event) => {
-      const { type, vector, progress, error, status, file } = event.data;
-      if (type === 'ready') {
-        console.log('Worker Reporta: Modelo IA LISTO.');
-        dispatch(setModelReady(true));
-        setLoadingMsg('¡Modelo Listo!');
-        setTimeout(() => setShowSplash(false), 800); // Dar un momento para ocultar el splash
-      } else if (type === 'progress') {
-        // Puede dar estados como "initiate", "download", "done"
-        console.log('Progreso de descarga del modelo:', event.data);
-      } else if (status === 'initiate') {
-        setLoadingMsg(`Descargando componente: ${file}...`);
-      } else if (status === 'download') {
-         // progreso
-      } else if (status === 'progress') {
-         setLoadingMsg(`Descargando parte del modelo... ${(progress).toFixed(2)}%`);
-      } else if (status === 'done') {
-         setLoadingMsg(`Componente finalizado: ${file}`);
-      } else if (type === 'result') {
-        console.log('Worker Reporta vectorización exitosa. Procediendo a buscar similitudes...');
-        handleVectorResult(vector);
-      } else if (type === 'error') {
-        console.error('Error del Worker:', error);
-        dispatch(setExtracting(false));
-      }
-    });
-
-    setLoadingMsg('Solicitando inicialización de modelo en el Worker...');
-    workerRef.current.postMessage({ type: 'init' });
-
-    return () => {
-      workerRef.current?.terminate();
-    };
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
-  const handleVectorResult = (queryVector: number[]) => {
-    // FIX: Get the latest embeddings from the store directly because of stale closure
-    const currentEmbeddings = store.getState().career.embeddings;
-
-    if (!currentEmbeddings.length) {
-      console.warn('¡Las embeddings base no han cargado! No se puede comparar.');
-      dispatch(setExtracting(false));
+    // Vite env variable
+    const apiKey = import.meta.env.VITE_OPENAI_API_KEY;
+    if (!apiKey) {
+      alert("Por favor, configura VITE_OPENAI_API_KEY en tu variable de entorno (.env o .env.local)");
       return;
     }
 
-    console.log(`Realizando similitud de coseno contra ${currentEmbeddings.length} ramas...`);
-    const scored = currentEmbeddings.map(emb => ({
-      rama: emb.rama,
-      score: cosineSimilarity(queryVector, emb.vector)
-    }));
+    dispatch(setExtracting(true));
 
-    // Sort descending
-    scored.sort((a, b) => b.score - a.score);
-    console.log('Resultados más similares:', scored.slice(0, 20));
+    try {
+      const response = await fetch('https://api.openai.com/v1/embeddings', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${apiKey}`
+        },
+        body: JSON.stringify({
+          input: queryInput,
+          model: 'text-embedding-3-small'
+        })
+      });
 
-    dispatch(setResults(scored.slice(0, 20))); // Top 20
-    dispatch(setExtracting(false));
+      if (!response.ok) {
+         throw new Error(`OpenAI API falló: ${response.statusText}`);
+      }
+
+      const data = await response.json();
+      const queryVector = data.data[0].embedding;
+
+      const scored = embeddings.map((emb: {rama: string, vector: number[]}) => ({
+        rama: emb.rama,
+        score: cosineSimilarity(queryVector, emb.vector)
+      }));
+
+      // Sort matches depending on best cosine match (highest nearest 1.0)
+      scored.sort((a, b) => b.score - a.score);
+
+      dispatch(setResults(scored.slice(0, 20))); // Top 20
+    } catch (error) {
+      console.error(error);
+      alert("Ocurrió un error consultando la API de OpenAI. Revisa la consola o tu API Key.");
+    } finally {
+      dispatch(setExtracting(false));
+    }
   };
 
   const handleSubmit = () => {
-    console.log('¡Botón clickeado con el texto! ->', queryInput);
-    if (!queryInput.trim()) {
-      console.warn('El texto está vacío o solo tiene espacios en blanco.');
-      return;
-    }
-    if (!isModelReady) {
-      console.warn('El modelo aún no está listo. Ignorando click.');
-      return;
-    }
-    
-    console.log('Mandando texto al Worker para extraer features...');
-    dispatch(setExtracting(true));
-    workerRef.current?.postMessage({ type: 'extract', text: queryInput });
+    handleSearch();
   };
 
   if (showSplash) {
     return (
       <div className="splash-screen">
         <div className="splash-content">
-          <h1>Iniciando Inteligencia Artificial</h1>
+          <h1>Clasificador Semántico OpenAI</h1>
           <div className="spinner"></div>
-          <p>{loadingMsg}</p>
+          <p>Cargando base de conocimientos...</p>
         </div>
       </div>
     );
@@ -124,50 +91,58 @@ function App() {
   return (
     <>
       <h1>Calculadora de Rama Laboral</h1>
-      <p className="subtitle">Encuentra tu clasificación económica ideal con IA 🧠</p>
+      <p className="subtitle">Clasificación IA ultra precisa con OpenAI 💬</p>
 
       <div className="glass-container">
         <div className="status-banner">
-          <span className={`status-badge ${isModelReady ? 'ready' : ''}`}></span>
-          {isModelReady ? 'Modelo de IA completamente funcional.' : loadingMsg}
+          <span className={`status-badge ${isDataReady ? 'ready' : ''}`}></span>
+          {isDataReady ? 'Base de vectores OpenAI lista.' : 'Cargando conocimiento...'}
         </div>
 
         <div className="input-wrapper">
           <label className="input-label" htmlFor="description">
-            ¿A qué te dedicas? Descríbelo con detalle.
+            Describe en detalle o coloquialmente en qué trabajas:
           </label>
           <textarea
             id="description"
             className="main-input"
-            placeholder="Ejemplo: Soy programador, creo páginas web y mantengo sistemas de ventas en la nube..."
+            placeholder="Ejemplo: Corto pelo, Trabajo de albañil, Vendo garnachas..."
             value={queryInput}
-            onChange={(e) => dispatch(setQueryInput(e.target.value))}
+            onChange={(e) => {
+              dispatch(setQueryInput(e.target.value));
+            }}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                handleSubmit();
+              }
+            }}
             autoFocus
           />
           <button 
             className="submit-btn" 
             onClick={handleSubmit} 
-            disabled={!isModelReady || isExtracting || !queryInput.trim()}
+            disabled={!isDataReady || !queryInput.trim() || isExtracting}
           >
             {isExtracting ? (
               <span style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                <div className="spinner"></div> Analizando...
+                <div className="spinner"></div> Pensando...
               </span>
-            ) : 'Buscar Rama'}
+            ) : 'Consultar a la IA'}
           </button>
         </div>
 
         {results.length > 0 && (
           <div className="results-container">
-            <h2 className="results-title">Resultados Sugeridos</h2>
+            <h2 className="results-title">Recomendaciones de OpenAI</h2>
             {results.map((res, idx) => (
               <div 
                 className="result-card" 
                 key={idx} 
-                style={{ animationDelay: `${0.1 * idx}s` }}
+                style={{ animationDelay: `${0.02 * idx}s` }}
               >
                 <div className="result-rama">{res.rama}</div>
-                <div className="result-score">{(res.score * 100).toFixed(1)}% Match</div>
+                <div className="result-score">{(res.score * 100).toFixed(1)}% de Similitud</div>
               </div>
             ))}
           </div>
