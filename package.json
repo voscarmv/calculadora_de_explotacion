@@ -8,7 +8,8 @@
     "build": "tsc -b && vite build",
     "lint": "eslint .",
     "preview": "vite preview",
-    "postinstall": "node scripts/generateEmbeddings.js"
+    "postinstall": "node scripts/generateDatosJSON.js",
+    "generate:embeddings": "node scripts/generateOpenAIEmbeddings.js"
   },
   "dependencies": {
     "@reduxjs/toolkit": "^2.11.2",
