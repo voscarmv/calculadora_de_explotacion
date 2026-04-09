@@ -19,8 +19,8 @@ function App() {
 
   useEffect(() => {
     Promise.all([
-      fetch('/embeddings.json').then(r => r.json()),
-      fetch('/datos.json').then(r => r.json())
+      fetch(`${import.meta.env.BASE_URL}embeddings.json`).then(r => r.json()),
+      fetch(`${import.meta.env.BASE_URL}datos.json`).then(r => r.json())
     ]).then(([embs, dats]) => {
       dispatch(setInitialData({ embeddings: embs, datos: dats }));
     }).catch((err) => {
