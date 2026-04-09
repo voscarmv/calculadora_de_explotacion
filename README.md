@@ -2,6 +2,8 @@
 
 ![React](https://img.shields.io/badge/React-18-blue?logo=react) ![Vite](https://img.shields.io/badge/Vite-5-646CFF?logo=vite) ![OpenAI](https://img.shields.io/badge/OpenAI-Embeddings-green?logo=openai) ![Typeform Style](https://img.shields.io/badge/UI-Typeform_Minimalist-red)
 
+🎯 **Mírala en vivo:** [https://www.vamo.top/explotacion](https://www.vamo.top/explotacion)
+
 Una poderosa aplicación educativa e interactiva que revela la magnitud de la explotación laboral en México. Utiliza una interfaz minimalista progresiva (al estilo *Typeform*) e **Inteligencia Artificial** (OpenAI) para catalogar las ocupaciones coloquiales y cruzarlas con los **Datos Reales del Censo Económico del INEGI**, exponiendo cuánta plusvalía absoluta el empleado le regala a su patrón.
 
 ---
