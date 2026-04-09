@@ -9,7 +9,7 @@ import { cosineSimilarity } from './utils/math';
 // VARIABLES DE CONFIGURACIÓN
 // ============================================
 const YOUTUBE_URL_DUENOS = "https://www.youtube.com/watch?v=dQw4w9WgXcQ"; // <-- Cambia la URL del video para dueños
-const PARTIDO_COMUNISTA_URL = "https://www.comunistas-mexicanos.org/";    // <-- Cambia la URL final de acción
+const PARTIDO_COMUNISTA_URL = "https://docs.google.com/forms/d/e/1FAIpQLSdHqbHziMqCUUKp45ORzrZHAJuPuBYBc3V_EZGDAsBnetxUXA/viewform";    // <-- Cambia la URL final de acción
 
 function App() {
   const dispatch = useDispatch();
@@ -49,10 +49,10 @@ function App() {
       if (!response.ok) throw new Error("API falló");
       const data = await response.json();
       const qVec = data.data[0].embedding;
-      
-      const scored = embeddings.map((emb: {rama: string, vector: number[]}) => ({ 
-          rama: emb.rama, 
-          score: cosineSimilarity(qVec, emb.vector) 
+
+      const scored = embeddings.map((emb: { rama: string, vector: number[] }) => ({
+        rama: emb.rama,
+        score: cosineSimilarity(qVec, emb.vector)
       }));
       scored.sort((a, b) => b.score - a.score);
       dispatch(setResults(scored.slice(0, 5))); // Solo mostramos 5 opciones para no abrumar
@@ -91,9 +91,9 @@ function App() {
           <div className="typeform-container step-card">
             <h1>¿A qué te dedicas en tu trabajo?</h1>
             <p className="helper-text">Descríbelo con tus propias palabras (ej. Corto el cabello, despachador de gasolina, ingeniero).</p>
-            <input 
-              type="text" 
-              className="main-input" 
+            <input
+              type="text"
+              className="main-input"
               placeholder="Escribe tu oficio o profesión aquí..."
               value={queryInput}
               onChange={e => dispatch(setQueryInput(e.target.value))}
@@ -103,7 +103,7 @@ function App() {
             <button className="btn-primary" onClick={findMatch} disabled={!queryInput.trim() || isExtracting}>
               {isExtracting ? (
                 <span style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                  <div className="spinner" style={{width: 20, height: 20, borderWidth: 2}}></div> Pensando...
+                  <div className="spinner" style={{ width: 20, height: 20, borderWidth: 2 }}></div> Pensando...
                 </span>
               ) : 'Siguiente'}
             </button>
@@ -117,9 +117,9 @@ function App() {
             <p className="helper-text">Nuestra Inteligencia Artificial encontró estas ramas económicas. Elige la más cercana a tu ocupación.</p>
             <div className="options-grid">
               {results.map((r, i) => (
-                <button 
-                  key={i} 
-                  className="btn-option" 
+                <button
+                  key={i}
+                  className="btn-option"
                   onClick={() => {
                     dispatch(setSelectedRama(r.rama));
                     dispatch(nextStep());
@@ -128,8 +128,8 @@ function App() {
                   {r.rama}
                 </button>
               ))}
-              <button style={{marginTop: 20}} className="btn-secondary" onClick={() => {
-                dispatch(setSelectedRama("_GLOBAL_")); 
+              <button style={{ marginTop: 20 }} className="btn-secondary" onClick={() => {
+                dispatch(setSelectedRama("_GLOBAL_"));
                 dispatch(nextStep());
               }}>
                 No estoy seguro, prefiero omitir / usar el promedio nacional.
@@ -143,9 +143,9 @@ function App() {
           <div className="typeform-container step-card">
             <h1>¿Cuánto ganas al mes, libre de impuestos?</h1>
             <p className="helper-text">En Pesos Mexicanos (MXN). No guardamos ningún dato que pongas aquí.</p>
-            <input 
-              type="number" 
-              className="main-input" 
+            <input
+              type="number"
+              className="main-input"
               placeholder="$ 0"
               value={salary}
               onChange={e => dispatch(setSalary(e.target.value))}
@@ -163,9 +163,9 @@ function App() {
           <div className="typeform-container step-card">
             <h1>¿Cuántas horas trabajas a la semana?</h1>
             <p className="helper-text">Incluye tiempo de transporte o las horas extra (incluso si no te las pagan) si quieres ver un cálculo brutalmente honesto.</p>
-            <input 
-              type="number" 
-              className="main-input" 
+            <input
+              type="number"
+              className="main-input"
               placeholder="Ej. 48"
               value={hours}
               onChange={e => dispatch(setHours(e.target.value))}
@@ -181,7 +181,7 @@ function App() {
       case 6: {
         const d = datos[selectedRama || '_GLOBAL_'] || datos['_GLOBAL_'];
         const totalBase = d.HRS_PARA_SALARIO + d.HRS_PARA_INFRAESTRUCTURA + d.HRS_PLUSVALIA_NETA;
-        
+
         const pSal = d.HRS_PARA_SALARIO / totalBase;
         const pInf = d.HRS_PARA_INFRAESTRUCTURA / totalBase;
         const pPlu = d.HRS_PLUSVALIA_NETA / totalBase;
@@ -192,7 +192,7 @@ function App() {
         const minDiaInf = Math.round(pInf * hrsDiarias * 60);
         const minDiaPlu = Math.round(pPlu * hrsDiarias * 60);
 
-        const formatMin = (m: number) => m >= 60 ? `${(m/60).toFixed(1)} hrs` : `${m} min`;
+        const formatMin = (m: number) => m >= 60 ? `${(m / 60).toFixed(1)} hrs` : `${m} min`;
 
         const mesesSal = (pSal * 12).toFixed(1);
         const mesesInf = (pInf * 12).toFixed(1);
@@ -206,58 +206,58 @@ function App() {
 
         return (
           <div className="typeform-container step-card" style={{ maxWidth: '900px' }}>
-            <h1 style={{fontSize: '3rem', color: 'var(--accent)'}}>La Realidad de tu Explotación</h1>
-            <p style={{fontSize: '1.2rem', marginBottom: '30px', fontWeight: 500}}>
-              Con los <a href="https://github.com/voscarmv/marx" target="_blank" rel="noreferrer" style={{color: 'inherit', textDecoration: 'underline', fontWeight: 'bold'}}>datos del Censo Económico del INEGI</a> para <b>{selectedRama === '_GLOBAL_' ? 'el promedio mexicano' : selectedRama}</b>, esto es lo que descubrimos de tu vida laboral:
+            <h1 style={{ fontSize: '3rem', color: 'var(--accent)' }}>La Realidad de tu Explotación</h1>
+            <p style={{ fontSize: '1.2rem', marginBottom: '30px', fontWeight: 500 }}>
+              Con los <a href="https://github.com/voscarmv/marx" target="_blank" rel="noreferrer" style={{ color: 'inherit', textDecoration: 'underline', fontWeight: 'bold' }}>datos del Censo Económico del INEGI</a> para <b>{selectedRama === '_GLOBAL_' ? 'el promedio mexicano' : selectedRama}</b>, esto es lo que descubrimos de tu vida laboral:
             </p>
-            
+
             <div className="result-container">
               <div className="result-stat">
                 <h3>TU JORNADA DIARIA DE 8 HORAS, DECONSTRUIDA:</h3>
                 <p>Te pagas a ti mismo en {formatMin(minDiaSal)}.</p>
                 <p>Durante {formatMin(minDiaInf)} le pagas la luz, internet y máquinas a tu empresa.</p>
-                <p style={{color: 'var(--accent)'}}>Y por unas aplastantes {formatMin(minDiaPlu)}, trabajas absolutamente gratis, como ganancia neta para el patrón.</p>
+                <p style={{ color: 'var(--accent)' }}>Y por unas aplastantes {formatMin(minDiaPlu)}, trabajas absolutamente gratis, como ganancia neta para el patrón.</p>
               </div>
 
               <div className="result-stat">
                 <h3>DE TUS 12 MESES TRABAJANDO AL AÑO:</h3>
                 <p>Cielos... Cubres tu salario de todo el año produciendo riqueza equivalente a <b>{mesesSal} meses</b>.</p>
                 <p>La infraestructura la pagas en tan solo <b>{mesesInf} meses</b>.</p>
-                <p style={{color: 'var(--accent)'}}>Tú le regalas tu sudor como riqueza pura a los dueños durante <b>{mesesPlu} meses completos</b>.</p>
+                <p style={{ color: 'var(--accent)' }}>Tú le regalas tu sudor como riqueza pura a los dueños durante <b>{mesesPlu} meses completos</b>.</p>
               </div>
 
               <div className="result-stat">
                 <h3>$ EL DINERO: ¿CUÁNTO TE ROBAN MENSCH? $</h3>
                 <p>Tú crees que ganas ${salarioNum.toLocaleString()}, pero en realidad de tus manos sale mucha más riqueza.</p>
-                <p style={{color: 'var(--accent)'}}>Tú y tu dolor de espalda generan ${roboMensual.toLocaleString(undefined, {maximumFractionDigits: 0})} MXN de plusvalía (ganancias para el patrón) **cada maldito mes**.</p>
-                <p style={{fontSize: '1rem', color: 'var(--text-muted)'}}>(Tasa de Explotación Oficial validada: {tasa})</p>
+                <p style={{ color: 'var(--accent)' }}>Tú y tu dolor de espalda generan ${roboMensual.toLocaleString(undefined, { maximumFractionDigits: 0 })} MXN de plusvalía (ganancias para el patrón) **cada maldito mes**.</p>
+                <p style={{ fontSize: '1rem', color: 'var(--text-muted)' }}>(Tasa de Explotación Oficial validada: {tasa})</p>
               </div>
             </div>
 
             <div className="communist-tone">
               <p>
-                <strong>¡Despierta Camarada!</strong> 
+                <strong>¡Despierta Camarada!</strong>
               </p>
-              <br/>
+              <br />
               <p>
-                Dejas tu fuerza vital, tu juventud y <b>{hours} valiosas horas cada semana</b> para que un burgués apellidado "Slim" o tu "jefe buena onda" recoja los frutos de tu trabajo para comprarse otra camioneta del año. Te lavan el cerebro diciéndote que te vas a hacer rico "echándole ganas", mientras tú generas miles de pesos que van directos a su cuenta de banco. 
+                Dejas tu fuerza vital, tu juventud y <b>{hours} valiosas horas cada semana</b> para que un burgués apellidado "Slim" o tu "jefe buena onda" recoja los frutos de tu trabajo para comprarse otra camioneta del año. Te lavan el cerebro diciéndote que te vas a hacer rico "echándole ganas", mientras tú generas miles de pesos que van directos a su cuenta de banco.
               </p>
-              <br/>
+              <br />
               <p>
                 <b>El capitalismo es el peor robo de la historia, normalizado a los ojos de todos.</b>
                 Ellos te necesitan para mover las máquinas, ¡pero tú a ellos no!
               </p>
-              
-              <div style={{marginTop: 40, textAlign: 'center'}}>
-                <a href={PARTIDO_COMUNISTA_URL} target="_blank" rel="noreferrer" style={{textDecoration: 'none'}}>
-                  <button className="btn-primary" style={{transform: 'scale(1.1)'}}>¡Únete al Partido Comunista y rebélate!</button>
+
+              <div style={{ marginTop: 40, textAlign: 'center' }}>
+                <a href={PARTIDO_COMUNISTA_URL} target="_blank" rel="noreferrer" style={{ textDecoration: 'none' }}>
+                  <button className="btn-primary" style={{ transform: 'scale(1.1)' }}>¡Únete al Partido Comunista y rebélate!</button>
                 </a>
               </div>
             </div>
-            
-            <div style={{marginTop: 50, textAlign: 'center', marginBottom: 50}}>
-              <button 
-                className="btn-secondary" 
+
+            <div style={{ marginTop: 50, textAlign: 'center', marginBottom: 50 }}>
+              <button
+                className="btn-secondary"
                 onClick={() => {
                   dispatch(setStep(1));
                   dispatch(setQueryInput(''));
