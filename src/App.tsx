@@ -107,6 +107,9 @@ function App() {
                 </span>
               ) : 'Siguiente'}
             </button>
+            <button className="btn-secondary" style={{ marginTop: 15 }} onClick={() => dispatch(setStep(step - 1))}>
+              Atrás
+            </button>
           </div>
         );
 
@@ -134,6 +137,9 @@ function App() {
               }}>
                 No estoy seguro, prefiero omitir / usar el promedio nacional.
               </button>
+              <button style={{ marginTop: 15 }} className="btn-secondary" onClick={() => dispatch(setStep(step - 1))}>
+                Atrás
+              </button>
             </div>
           </div>
         );
@@ -155,6 +161,9 @@ function App() {
             <button className="btn-primary" onClick={() => dispatch(nextStep())} disabled={!salary}>
               Siguiente
             </button>
+            <button className="btn-secondary" style={{ marginTop: 15 }} onClick={() => dispatch(setStep(step - 1))}>
+              Atrás
+            </button>
           </div>
         );
 
@@ -174,6 +183,9 @@ function App() {
             />
             <button className="btn-primary" onClick={() => dispatch(nextStep())} disabled={!hours}>
               Revelar mis resultados
+            </button>
+            <button className="btn-secondary" style={{ marginTop: 15 }} onClick={() => dispatch(setStep(step - 1))}>
+              Atrás
             </button>
           </div>
         );
@@ -258,6 +270,14 @@ function App() {
             <div style={{ marginTop: 50, textAlign: 'center', marginBottom: 50 }}>
               <button
                 className="btn-secondary"
+                style={{ marginRight: 15, marginBottom: 15 }}
+                onClick={() => dispatch(setStep(step - 1))}
+              >
+                Atrás
+              </button>
+              <button
+                className="btn-secondary"
+                style={{ marginBottom: 15 }}
                 onClick={() => {
                   dispatch(setStep(1));
                   dispatch(setQueryInput(''));
@@ -267,6 +287,11 @@ function App() {
               >
                 Volver a Calcular Otro Puesto
               </button>
+              <div style={{ marginTop: 30 }}>
+                <a href="https://github.com/voscarmv/calculadora_de_explotacion" target="_blank" rel="noreferrer" style={{ color: 'var(--text-muted)', textDecoration: 'underline', fontSize: '0.9rem' }}>
+                  Ver el código fuente de este formulario en GitHub
+                </a>
+              </div>
             </div>
           </div>
         );
