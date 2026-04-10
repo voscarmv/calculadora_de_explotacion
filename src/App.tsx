@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { type RootState } from './store/store';
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -13,6 +13,7 @@ const PARTIDO_COMUNISTA_URL = "https://docs.google.com/forms/d/e/1FAIpQLSdHqbHzi
 
 function App() {
   const dispatch = useDispatch();
+  const [showPrivacyNotice, setShowPrivacyNotice] = useState(false);
   const { isDataReady, step, queryInput, results, selectedRama, salary, hours, isExtracting, embeddings, datos } = useSelector(
     (state: RootState) => state.career
   );
@@ -82,6 +83,15 @@ function App() {
             <div className="options-grid">
               <button className="btn-option" onClick={() => dispatch(nextStep())}>🧑‍🔧 Soy empleado / Trabajador</button>
               <button className="btn-option" onClick={handleDueño}>💼 Soy dueño de negocio / Patrón</button>
+            </div>
+
+            <div style={{ marginTop: 40, fontSize: '0.8rem', color: 'var(--text-muted)', lineHeight: '1.5', textAlign: 'center', opacity: 0.8 }}>
+              <button
+                onClick={() => setShowPrivacyNotice(true)}
+                style={{ background: 'none', border: 'none', color: 'var(--text-muted)', textDecoration: 'underline', cursor: 'pointer', fontSize: '0.8rem', padding: 0, marginTop: '10px' }}
+              >
+                Ver Aviso de Privacidad Integral
+              </button>
             </div>
           </div>
         );
@@ -302,6 +312,58 @@ function App() {
   return (
     <>
       {renderStep()}
+
+      {showPrivacyNotice && (
+        <div style={{
+          position: 'fixed', top: 0, left: 0, width: '100%', height: '100%',
+          backgroundColor: 'rgba(0,0,0,0.85)', zIndex: 9999, display: 'flex',
+          justifyContent: 'center', alignItems: 'center', padding: '20px'
+        }}>
+          <div style={{
+            background: 'var(--card-bg, #1e1e1e)', color: 'var(--text, #fff)',
+            padding: '30px', borderRadius: '12px', maxWidth: '650px',
+            maxHeight: '85vh', overflowY: 'auto', textAlign: 'left',
+            boxShadow: '0 10px 25px rgba(0,0,0,0.5)'
+          }}>
+            <h2 style={{ marginBottom: '20px', color: 'var(--accent, #ff4c4c)', fontSize: '1.5rem' }}>Aviso de Privacidad Integral</h2>
+            <div style={{ fontSize: '0.9rem', lineHeight: '1.6', color: '#ccc' }}>
+              <p><strong>1. Identidad y domicilio del Responsable</strong><br />
+                Entropy Labs, con contacto electrónico en <a href="mailto:contacto@entropylabs.mx" style={{ color: 'inherit', textDecoration: 'underline' }}>contacto@entropylabs.mx</a>, es el responsable del uso y protección de sus datos personales, y al respecto le informamos lo siguiente:</p>
+
+              <p><strong>2. Datos personales sometidos a tratamiento</strong><br />
+                Para llevar a cabo las finalidades descritas en este aviso de privacidad, le informamos que <strong>esta aplicación no recaba, guarda, ni almacena ningún dato personal</strong> que lo identifique (como nombre, teléfono, correo, identificadores de dispositivo, IP o ubicación). Los datos estadísticos y salariales proporcionados se procesan únicamente en la memoria local de su dispositivo de forma anónima y volátil durante su sesión.</p>
+
+              <p><strong>3. Finalidades del tratamiento</strong><br />
+                El único dato extraído de su dispositivo es la "descripción de su ocupación". Esta información se recolecta y utiliza exclusivamente para la siguiente finalidad primaria:<br />
+                • Procesar el texto mediante el uso de inteligencia artificial para encontrar la rama económica equivalente más cercana contenida en nuestra base de datos local precalculada.</p>
+
+              <p><strong>4. Transferencia de información técnica a terceros</strong><br />
+                Para cumplir de forma estricta con la finalidad descrita, el texto de su ocupación es enviado de forma temporal, aislada y anonimizada a la interfaz de programación de aplicaciones (API) de OpenAI (<code style={{ fontSize: '0.8rem' }}>api.openai.com</code>). De acuerdo con sus políticas comerciales para el uso de la API, OpenAI almacena esta solicitud temporalmente por motivos de seguridad hasta por 30 días, no utiliza esta información enviada vía API para entrenar ninguno de sus modelos de lenguaje, y posteriormente nos devuelve la clasificación semántica (embedding matemático). Para conocer detalladamente este tratamiento por el tercero, le invitamos a consultar las políticas de privacidad de OpenAI en: <a href="https://openai.com/policies/privacy-policy" target="_blank" rel="noreferrer" style={{ color: 'inherit', textDecoration: 'underline' }}>https://openai.com/policies/privacy-policy</a>.</p>
+
+              <p><strong>5. Derechos ARCO y revocación del consentimiento</strong><br />
+                Usted tiene derecho a Acceder, Rectificar, Cancelar u Oponerse (Derechos ARCO) al tratamiento de sus datos personales. Sin embargo, dado que en nuestros sistemas no elaboramos perfiles, no usamos cookies de rastreo y no almacenamos una base de datos con información que pueda identificarlo personalmente o vincularlo de forma retrospectiva con la "descripción de la ocupación" ingresada, existe una imposibilidad material para dar trámite a este tipo de solicitudes sobre sus interacciones previas. Para cualquier aclaración, el canal oficial sigue siendo: <a href="mailto:contacto@entropylabs.mx" style={{ color: 'inherit', textDecoration: 'underline' }}>contacto@entropylabs.mx</a>.</p>
+
+              <p><strong>6. Uso de tecnologías de rastreo</strong><br />
+                Le informamos oficialmente que en esta página de internet no utilizamos cookies, web beacons u otras tecnologías similares para recabar o rastrear información sobre su comportamiento u origen metodológico como usuario de internet.</p>
+
+              <p><strong>7. Modificaciones al aviso de privacidad</strong><br />
+                El presente aviso de privacidad puede sufrir modificaciones, cambios o actualizaciones derivadas de nuevos requerimientos legales, de nuestras propias necesidades operativas o de nuestras prácticas de privacidad. Nos comprometemos a mantenerlo informado sobre los cambios que pueda sufrir el presente aviso a través de su publicación constante y actualizada en esta misma aplicación de acceso público.</p>
+
+              <p><em>Última actualización: Abril de 2026.</em></p>
+            </div>
+
+            <div style={{ marginTop: '30px', textAlign: 'center' }}>
+              <button
+                className="btn-primary"
+                onClick={() => setShowPrivacyNotice(false)}
+                style={{ width: '100%', padding: '12px', fontSize: '1rem' }}
+              >
+                Cerrar Aviso Integral
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </>
   );
 }
