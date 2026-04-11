@@ -202,22 +202,25 @@ function App() {
 
       case 6: {
         const d = datos[selectedRama || '_GLOBAL_'] || datos['_GLOBAL_'];
-        const totalBase = d.HRS_PARA_SALARIO + d.HRS_PARA_INFRAESTRUCTURA + d.HRS_PLUSVALIA_NETA;
+        const totalBase = d.HRS_PARA_SALARIO + d.HRS_OPERACION + d.HRS_IMPUESTOS + d.HRS_PLUSVALIA_NETA;
 
         const pSal = d.HRS_PARA_SALARIO / totalBase;
-        const pInf = d.HRS_PARA_INFRAESTRUCTURA / totalBase;
+        const pOpe = d.HRS_OPERACION / totalBase;
+        const pImp = d.HRS_IMPUESTOS / totalBase;
         const pPlu = d.HRS_PLUSVALIA_NETA / totalBase;
 
         // Horas diarias asumidas en turno fijo
         const hrsDiarias = 8;
         const minDiaSal = Math.round(pSal * hrsDiarias * 60);
-        const minDiaInf = Math.round(pInf * hrsDiarias * 60);
+        const minDiaOpe = Math.round(pOpe * hrsDiarias * 60);
+        const minDiaImp = Math.round(pImp * hrsDiarias * 60);
         const minDiaPlu = Math.round(pPlu * hrsDiarias * 60);
 
         const formatMin = (m: number) => m >= 60 ? `${(m / 60).toFixed(1)} hrs` : `${m} min`;
 
         const mesesSal = (pSal * 12).toFixed(1);
-        const mesesInf = (pInf * 12).toFixed(1);
+        const mesesOpe = (pOpe * 12).toFixed(1);
+        const mesesImp = (pImp * 12).toFixed(1);
         const mesesPlu = (pPlu * 12).toFixed(1);
 
         const tasa = d.TASA_EXPLOTACION;
@@ -237,14 +240,16 @@ function App() {
               <div className="result-stat">
                 <h3>TU JORNADA DIARIA DE 8 HORAS, DECONSTRUIDA:</h3>
                 <p>Te pagas a ti mismo en {formatMin(minDiaSal)}.</p>
-                <p>Durante {formatMin(minDiaInf)} le pagas la luz, internet y máquinas a tu empresa.</p>
+                <p>Durante {formatMin(minDiaOpe)} le pagas la operación (luz, internet, máquinas) a tu empresa.</p>
+                <p>Durante {formatMin(minDiaImp)} de tu día trabajas solo para pagar impuestos.</p>
                 <p style={{ color: 'var(--accent)' }}>Y por unas aplastantes {formatMin(minDiaPlu)}, trabajas absolutamente gratis, como ganancia neta para el patrón.</p>
               </div>
 
               <div className="result-stat">
                 <h3>DE TUS 12 MESES TRABAJANDO AL AÑO:</h3>
                 <p>Cielos... Cubres tu salario de todo el año produciendo riqueza equivalente a <b>{mesesSal} meses</b>.</p>
-                <p>La infraestructura la pagas en tan solo <b>{mesesInf} meses</b>.</p>
+                <p>La operación de la empresa la pagas en tan solo <b>{mesesOpe} meses</b>.</p>
+                <p>Destinas <b>{mesesImp} meses</b> íntegros del año a pagar impuestos.</p>
                 <p style={{ color: 'var(--accent)' }}>Tú le regalas tu sudor como riqueza pura a los dueños durante <b>{mesesPlu} meses completos</b>.</p>
               </div>
 

@@ -2,7 +2,7 @@ import { createSlice, type PayloadAction } from '@reduxjs/toolkit';
 
 interface CareerState {
   embeddings: { rama: string, vector: number[] }[];
-  datos: Record<string, { HRS_PARA_SALARIO: number, HRS_PARA_INFRAESTRUCTURA: number, HRS_PLUSVALIA_NETA: number, TASA_EXPLOTACION: string }>;
+  datos: Record<string, { HRS_PARA_SALARIO: number, HRS_OPERACION: number, HRS_IMPUESTOS: number, HRS_PLUSVALIA_NETA: number, TASA_EXPLOTACION: string }>;
   isDataReady: boolean;
   
   step: number;

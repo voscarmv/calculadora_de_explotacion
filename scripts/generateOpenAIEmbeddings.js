@@ -23,8 +23,8 @@ async function generate() {
 
   const openai = new OpenAI({ apiKey: apiKey });
 
-  console.log('Leyendo datos_rama.csv...');
-  const csvData = fs.readFileSync(join(__dirname, '..', 'datos_rama.csv'), 'utf8');
+  console.log('Leyendo rama2.csv...');
+  const csvData = fs.readFileSync(join(__dirname, '..', 'rama2.csv'), 'utf8');
   const parsed = Papa.parse(csvData, { header: true, skipEmptyLines: true });
   
   // Extraer ramas únicas
