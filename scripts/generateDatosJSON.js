@@ -11,28 +11,50 @@ const parsed = Papa.parse(csvData, { header: true, skipEmptyLines: true });
 
 const dict = {};
 
-// Default global averages in case we cant find one or user skips
-const globales = {
-  HRS_PARA_SALARIO: 2.5,
-  HRS_OPERACION: 0.5,
-  HRS_IMPUESTOS: 0.5,
-  HRS_PLUSVALIA_NETA: 4.5,
-  TASA_EXPLOTACION: "200%"
-};
+let totalSalario = 0;
+let totalOperacion = 0;
+let totalImpuestos = 0;
+let totalPlusvalia = 0;
+let count = 0;
 
 parsed.data.forEach(row => {
   if (row.NOMBRE_RAMA && row.HRS_SALARIO) {
+    const salario = parseFloat(row.HRS_SALARIO);
+    const operacion = parseFloat(row.HRS_OPERACION);
+    const impuestos = parseFloat(row.HRS_IMPUESTOS_Y_FINANZAS);
+    const plusvalia = parseFloat(row.HRS_PLUSVALIA_PURA);
+
+    if (!isNaN(salario) && !isNaN(operacion) && !isNaN(impuestos) && !isNaN(plusvalia)) {
+      totalSalario += salario;
+      totalOperacion += operacion;
+      totalImpuestos += impuestos;
+      totalPlusvalia += plusvalia;
+      count++;
+    }
+
     dict[row.NOMBRE_RAMA] = {
-      HRS_PARA_SALARIO: parseFloat(row.HRS_SALARIO),
-      HRS_OPERACION: parseFloat(row.HRS_OPERACION),
-      HRS_IMPUESTOS: parseFloat(row.HRS_IMPUESTOS_Y_FINANZAS),
-      HRS_PLUSVALIA_NETA: parseFloat(row.HRS_PLUSVALIA_PURA),
+      HRS_PARA_SALARIO: salario,
+      HRS_OPERACION: operacion,
+      HRS_IMPUESTOS: impuestos,
+      HRS_PLUSVALIA_NETA: plusvalia,
       TASA_EXPLOTACION: row.CUOTA_PLUSVALIA
     };
   }
 });
 
-dict["_GLOBAL_"] = globales;
+const avgSalario = count > 0 ? totalSalario / count : 2.5;
+const avgOperacion = count > 0 ? totalOperacion / count : 0.5;
+const avgImpuestos = count > 0 ? totalImpuestos / count : 0.5;
+const avgPlusvalia = count > 0 ? totalPlusvalia / count : 4.5;
+const tasaExplotacion = count > 0 ? ((avgPlusvalia / avgSalario) * 100).toFixed(2) + "%" : "200%";
+
+dict["_GLOBAL_"] = {
+  HRS_PARA_SALARIO: parseFloat(avgSalario.toFixed(2)),
+  HRS_OPERACION: parseFloat(avgOperacion.toFixed(2)),
+  HRS_IMPUESTOS: parseFloat(avgImpuestos.toFixed(2)),
+  HRS_PLUSVALIA_NETA: parseFloat(avgPlusvalia.toFixed(2)),
+  TASA_EXPLOTACION: tasaExplotacion
+};
 
 const outPath = join(__dirname, '..', 'public', 'datos.json');
 fs.writeFileSync(outPath, JSON.stringify(dict));
