@@ -228,6 +228,7 @@ function App() {
         const salarioNum = Number(salary);
         const valorGeneradoMensual = salarioNum / pSal;
         const roboMensual = valorGeneradoMensual * pPlu;
+        const valorOperacionMensual = valorGeneradoMensual * pOpe;
 
         return (
           <div className="typeform-container step-card" style={{ maxWidth: '900px' }}>
@@ -239,25 +240,33 @@ function App() {
             <div className="result-container">
               <div className="result-stat">
                 <h3>TU JORNADA DIARIA DE 8 HORAS, DECONSTRUIDA:</h3>
-                <p>Te pagas a ti mismo en {formatMin(minDiaSal)}.</p>
-                <p>Durante {formatMin(minDiaOpe)} le pagas la operación (luz, internet, máquinas) a tu empresa.</p>
-                <p>Durante {formatMin(minDiaImp)} de tu día trabajas solo para pagar impuestos.</p>
-                <p style={{ color: 'var(--accent)' }}>Y por unas aplastantes {formatMin(minDiaPlu)}, trabajas absolutamente gratis, como ganancia neta para el patrón.</p>
+                <ul style={{ paddingLeft: '20px', margin: '15px 0', textAlign: 'left' }}>
+                  <li style={{ marginBottom: '10px' }}>Te pagas a ti mismo en {formatMin(minDiaSal)}.</li>
+                  <li style={{ marginBottom: '10px' }}>Durante {formatMin(minDiaOpe)} le pagas la operación e infraestructura (luz, internet, máquinas) a la empresa. <b>(Esto también es plusvalía para el patrón, ya que esta infraestructura se convierte en su propiedad privada, no de los trabajadores)</b>.</li>
+                  <li style={{ marginBottom: '10px' }}>Durante {formatMin(minDiaImp)} de tu día trabajas solo para pagar impuestos.</li>
+                  <li style={{ color: 'var(--accent)' }}>Y por unas aplastantes {formatMin(minDiaPlu)}, trabajas absolutamente gratis, como ganancia neta para el patrón.</li>
+                </ul>
               </div>
 
               <div className="result-stat">
                 <h3>DE TUS 12 MESES TRABAJANDO AL AÑO:</h3>
-                <p>Cielos... Cubres tu salario de todo el año produciendo riqueza equivalente a <b>{mesesSal} meses</b>.</p>
-                <p>La operación de la empresa la pagas en tan solo <b>{mesesOpe} meses</b>.</p>
-                <p>Destinas <b>{mesesImp} meses</b> íntegros del año a pagar impuestos.</p>
-                <p style={{ color: 'var(--accent)' }}>Tú le regalas tu sudor como riqueza pura a los dueños durante <b>{mesesPlu} meses completos</b>.</p>
+                <ul style={{ paddingLeft: '20px', margin: '15px 0', textAlign: 'left' }}>
+                  <li style={{ marginBottom: '10px' }}>Cielos... Cubres tu salario de todo el año produciendo riqueza equivalente a <b>{mesesSal} meses</b>.</li>
+                  <li style={{ marginBottom: '10px' }}>La operación e infraestructura de la empresa la pagas en tan solo <b>{mesesOpe} meses</b>.</li>
+                  <li style={{ marginBottom: '10px' }}>Destinas <b>{mesesImp} meses</b> íntegros del año a pagar impuestos.</li>
+                  <li style={{ color: 'var(--accent)' }}>Tú le regalas tu sudor como riqueza pura a los dueños durante <b>{mesesPlu} meses completos</b>.</li>
+                </ul>
               </div>
 
               <div className="result-stat">
-                <h3>$ EL DINERO: ¿CUÁNTO TE ROBAN MENSCH? $</h3>
-                <p>Tú crees que ganas ${salarioNum.toLocaleString()}, pero en realidad de tus manos sale mucha más riqueza.</p>
-                <p style={{ color: 'var(--accent)' }}>Tú y tu dolor de espalda generan ${roboMensual.toLocaleString(undefined, { maximumFractionDigits: 0 })} MXN de plusvalía (ganancias para el patrón) **cada maldito mes**.</p>
-                <p style={{ fontSize: '1rem', color: 'var(--text-muted)' }}>(Tasa de Explotación Oficial validada: {tasa})</p>
+                <h3>$ EL DINERO: ¿CUÁNTO TE ROBAN AL MES? $</h3>
+                <ul style={{ paddingLeft: '20px', margin: '15px 0', textAlign: 'left' }}>
+                  <li style={{ marginBottom: '10px' }}>Tú crees que ganas ${salarioNum.toLocaleString()}, pero en realidad de tus manos sale mucha más riqueza.</li>
+                  <li style={{ color: 'var(--accent)', marginBottom: '10px' }}>Tú y tu dolor de espalda generan <b>${roboMensual.toLocaleString(undefined, { maximumFractionDigits: 0 })} MXN</b> de plusvalía neta (ganancias líquidas para el patrón) cada maldito mes.</li>
+                  <li style={{ color: 'var(--accent)', marginBottom: '10px' }}>Además, pagas <b>${valorOperacionMensual.toLocaleString(undefined, { maximumFractionDigits: 0 })} MXN</b> mensuales para la infraestructura, equipo y operación (propiedad privada del patrón).</li>
+                  <li style={{ color: 'var(--accent)', fontWeight: 'bold', fontSize: '1.2rem', marginBottom: '10px' }}>¡EN TOTAL! Generas una PLUSVALÍA TOTAL de ${(roboMensual + valorOperacionMensual).toLocaleString(undefined, { maximumFractionDigits: 0 })} MXN al mes (Plusvalía Neta + Infraestructura) apropiada por el patrón.</li>
+                </ul>
+                <p style={{ fontSize: '1rem', color: 'var(--text-muted)', marginTop: '20px' }}>(Tasa de Explotación Oficial validada: {tasa})</p>
               </div>
             </div>
 
